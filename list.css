@@ -1,0 +1,68 @@
+body
+{
+    background-color:#3399ff;
+    font-family:arial,sans-serif;
+    font-size:13px;
+}
+
+header
+{
+    height:15%;
+    background-color: yellow;
+}
+
+footer
+{
+    height:10%;
+    background-color: greenyellow;
+}
+
+article
+{
+    height:75%;
+    background-color: cyan;
+    overflow:scroll; 
+}
+
+div.field
+{
+    padding-top: 20px;
+    padding-left:20px;
+}
+
+input#current_period
+{
+    width:60px;
+}
+
+td,th
+{
+    border:1px solid #ccc;
+    padding:6px 12px;
+    text-align:left;
+    vertical-align:top;
+    background-color:inherit;
+}
+
+th
+{
+    background-color:#dee8f1;
+}
+
+tr
+{
+   cursor:pointer;    
+}
+tr[current]
+{
+    background-color: white;   
+}
+
+/*
+Always show the error in red*/
+#error
+{
+ color: red;   
+}
+
+        

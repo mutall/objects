@@ -1,0 +1,32 @@
+/*
+Fields that are not visible*/
+/*
+Primary key fields are not shown*/
+[ftype='primary'],
+/*
+Foreign key fields are not vsible*/
+[ftype='foreign']
+{
+    display:none;
+}
+
+/*
+All labels can be pointed at*/
+label, #error
+{
+    cursor:pointer;
+}
+
+/*
+Foreign labels should mimic a button*/
+label.foreign
+{
+    background-color: buttonface;
+}
+
+/*
+Always show the error in red*/
+#error
+{
+ color: red;   
+}
