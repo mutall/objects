@@ -12,19 +12,19 @@
 session_start();
 //
 //To list records, a tablular layout must have been provided by the client
-if (isset($_GET['tabular']))
+if (isset($_GET['records']))
 {
-    $json_tabular= $_GET['tabular'];
+    $json_records= $_GET['records'];
 }
 //
 //Otherwise we cannot continue
 else
 {
-    die("The Tabular structure not set");
+    die("The Records structure not set");
 }
 //
-//Retrieve the tabular layout
-$tabular_ = json_decode($json_tabular);
+//Retrieve the records layout
+$records_ = json_decode($json_records);
 //
 //The library of php classes is required
 require_once 'library.php';
@@ -32,7 +32,7 @@ require_once 'library.php';
 //Set the database connection
 $dbase = Dbase::open();
 //
-$sqlEdit = new SqlEdit($tabular_->tname);
+$sqlEdit = new SqlEdit($records_->tname);
 //
 //Compile the hint condition
 //
@@ -43,7 +43,7 @@ $hintfield = $sqlEdit->basicfields()[Field::hint];
 $x1 = $hintfield->fvalue();
 //
 //Compile the hint text expression;
-$x2 = new ExpressionText("%$tabular_->hint%");
+$x2 = new ExpressionText("%$records_->hint%");
 //
 //Compile the like binary expression
 $hint = new ExpressionBinary($x1, "like", $x2);
@@ -51,15 +51,15 @@ $hint = new ExpressionBinary($x1, "like", $x2);
 //Update the where clause of sqlEdit
  $sqlEdit->where = $hint;
 //
-//Create a new tabular layout to support (a) construction of this page and (b)
+//Create a new records layout to support (a) construction of this page and (b)
 //interation with it
-$tabular = new Tabular($sqlEdit);
+$records = new Records($sqlEdit);
 
 ?>
 
 <html>
     <head>
-        <title><?php echo $tabular_->tname; ?> list</title>
+        <title><?php echo $records_->tname; ?> list</title>
     </head>
     <body>
         <!-- 
@@ -71,8 +71,8 @@ $tabular = new Tabular($sqlEdit);
         <!-- Main Table -->
         <table>
             <?php
-            //Display the tabular layout
-            $tabular->display();
+            //Display the records layout
+            $records->display();
             ?>
         </table>
     </body>

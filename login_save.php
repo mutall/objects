@@ -5,9 +5,9 @@
 session_start();
 
 //The schema data
-$dbase = json_decode($_GET['dbase']);
+$schema = json_decode($_GET['schema']);
 
-$_SESSION['dbase']=$dbase;
+$_SESSION['schema']=$schema;
 
 ?>
 

@@ -1,6 +1,7 @@
 <?php
-//Get the database name
-$dbname = $_GET['dbname'];
+//
+//retrieve the schema
+$json_schema= $_GET['schema'];
 ?>
 <html>
     <head>
@@ -10,7 +11,7 @@ $dbname = $_GET['dbname'];
         <script src="library.js"></script>
         
         <script>
-            var schema = new Schema();
+           var schema = new Schema(<?php echo $json_schema; ?>);
         </script>
         
     </head>
@@ -23,7 +24,8 @@ $dbname = $_GET['dbname'];
         <br/>
         <br/>
         <!-- Save the credentials in a session and close this window-->
-        <input type="button" value="Login" onclick="schema.login_save('<?php echo $dbname;?>')"/>
+        <!--the name of the db is part of the schema object -->
+        <input type="button" value="Login" onclick="schema.login_save()"/>
 
     </body>
     

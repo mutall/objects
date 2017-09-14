@@ -46,7 +46,7 @@ $dbase = Dbase::open();
         
          
     </head>
-    <body>
+    <body onload="dbase.on_select()">
         
         <!-- The header section -->
         <header>

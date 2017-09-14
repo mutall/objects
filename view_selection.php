@@ -23,9 +23,9 @@ $dbase=Dbase::open();
 //Construct the sql exension based on teh foreign key table
 $sqlExt = new SqlExt($tname);
 //
-//Create a new tabular layout to support (a) construction of this page and (b)
+//Create a new records layout to support (a) construction of this page and (b)
 //interation with it. The record id comes from the foreign key field
-$tabular = new Tabular($sqlExt, $fkfield->id);
+$records = new Records($sqlExt, $fkfield->id);
 
 ?>
 
@@ -41,29 +41,29 @@ $tabular = new Tabular($sqlExt, $fkfield->id);
         
         <!--Script for defining the objects needed for interacting with this page-->
         <script>
-            //Crete a tabular object around which the methods of this page 
+            //Crete a records object around which the methods of this page 
             //will be organized
-            //Compile the php tabular layout to a json string
+            //Compile the php records layout to a json string
             <?php
-            $json_tabular = json_encode($tabular);
+            $json_records = json_encode($records);
             ?>
             //
-            //Now create the tabular structure
-            var tabular = new Tabular(<?php echo $json_tabular; ?>);
+            //Now create the records structure
+            var records = new Records(<?php echo $json_records; ?>);
             
         </script>
         
          
     </head>
     <!-- Once the body is loaded, mark the current record and hreference it -->
-    <body onload="tabular.show_selection()">
+    <body onload="records.show_selection()">
         
         <!-- The header section -->
         <header>
             <!-- Button for client hint -->
             <div>
                 <label for ="hint">Filter Client</label>
-                <input type ="text" id="hint" onkeyup="tabular.populate_article(this.value, 'list_selection.php')"/>
+                <input type ="text" id="hint" onkeyup="records.populate_article(this.value, 'list_selection.php')"/>
             </div>
             
         </header>
@@ -71,18 +71,19 @@ $tabular = new Tabular($sqlExt, $fkfield->id);
         <article>
            
             <?php
-            //Display the view in a tabular version
-            $tabular->selection_display();
+            //Display the view in a records version
+            $records->selection_display();
             ?>
         </article>
         
         <!-- The footer section -->
         <footer>
             <?php echo $tname; ?>: 
-            <input type="button" value="Return Selection" onclick='tabular.return_selection()'>
-            <input type="button" value="Edit Selection" onclick='tabular.modify_record()'>
-            <input type="button" value="Add New" onclick='tabular.add_record()'>
-            <input type="button" value="Delete Current" onclick="tabular.delete()">
+            <input type="button" value="Return Selection" onclick='records.return_selection()'>
+            <input type="button" value="Edit Selection" onclick='records.modify_record()'>
+            <input type="button" value="Add New" onclick='records.add_record()'>
+            <input type="button" value="Delete Current" onclick="records.delete()">
+            <input type=button value="Cancel" onclick="window.close()"/>
         </footer>
     </body>
         
