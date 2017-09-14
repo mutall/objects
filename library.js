@@ -1,4 +1,3 @@
-
 //The Label layout of data supports interaction with data that is laid out in
 //the labl format.
 function Label(record)
@@ -270,6 +269,12 @@ function Label(record)
     
 }
 
+//Layout is the parent of all mutall layouts
+function Layout()
+{
+    
+}
+
 //Modelling the foreign key field
 function FkField()
 {
@@ -288,20 +293,20 @@ function FkField()
     this.fk_table_name;
 }
 
-function Schema()
+function Schema(schema_)
 {
+    //inherit from the tabular layout
+    Tabular.call(this, schema_.id);
     //
     this.dbname;
-    
     //
     this.select = function(tr)
     {
         
         new Row(tr).select();
         //
-        //Save the current row for future reference. Note that local storage does
-        //not store objectts; rather it stores serializable data structures
-        this.dbname = window.last_tr.getAttribute("dbname");
+        //Save the current row for future reference.
+        this.dbname = tr.getAttribute("dbname");
 
     };
     
@@ -326,12 +331,9 @@ function Schema()
             return;
         };
         //
-        //Get teh database name
-        var dbname = this.dbname;
-        //
         //Call the login menu and on login, save the credentials in session 
         //variables
-        var loginwin = window.open("login.php?dbname=" + dbname, "Login");
+        var loginwin = window.open("login.php?schema=" + JSON.stringify(this), "Login");
         //
         //Once logged in, unhide the log out menu option.
         //
@@ -362,21 +364,17 @@ function Schema()
 
 
     //Save the credentials in a session and close this window
-    this.login_save = function (dbname)
+    this.login_save = function ()
     {
         //Extract the login credentials
-        var dbase = 
-        {
-            username: document.getElementById("username").value,
-            password: document.getElementById("password").value,
-            dbname: dbname
-        };
+        this.username = document.getElementById("username").value;
+        this.password =  document.getElementById("password").value;
         //
         //Save the credentials in a session
-        var win = window.open("login_save.php?dbase="+JSON.stringify(dbase));
+        var win = window.open("login_save.php?schema="+JSON.stringify(this));
         //
         //Close this window, thus signalling to the caller that we are done with
-        //the login
+                        //the login
         window.close();
         
     };
@@ -394,15 +392,15 @@ function Schema()
 }
 
 
-//Mutall Tabular object represents the table (rather than the label) layout style
+//Mutall Records object represents the table (rather than the label) layout style
 //of a page
-function Tabular(tabular_)
+function Records(records_)
 {
-    //Retrieve the following variables from the in coming tabular layout
-    this.tname = tabular_.tname;
-    this.id = tabular_.id;
+    //Retrieve the following variables from the in coming records layout
+    this.tname = records_.tname;
+    this.id = records_.id;
     //
-    //The following tabular layout properties are set during user interaction
+    //The following records layout properties are set during user interaction
     //
     //Current hint is used for populating the articles section
     this.hint; 
@@ -411,7 +409,7 @@ function Tabular(tabular_)
     this.primarykey;
     this.focus_name;
     //
-    //Add a new record to this tabular layout the layout's view fields
+    //Add a new record to this records layout the layout's view fields
     this.add_record=function ()
     {
         //
@@ -422,12 +420,12 @@ function Tabular(tabular_)
         this.edit(primarykey, focus_name);
     };
     
-    //Modify the selected record from this tabular layout
+    //Modify the selected record from this records layout
     this.modify_record = function ()
     {
        //
        //Get the current row. A row is a tr with mutall methods
-       var row = get_current_row();
+       var row = this.get_current_row();
        //
        //Abort if the row is not valid
        if (!row) {return false;}
@@ -458,7 +456,7 @@ function Tabular(tabular_)
             focus_name: focus_name
         };
         //
-        //Convert the this tabular structire into a json string
+        //Convert the this records structire into a json string
         var json = JSON.stringify(record);
         //
         //Define the dimensions of the edit sub-window in (absolute) pixels
@@ -521,8 +519,8 @@ function Tabular(tabular_)
         var yes = window.confirm("Do you really want to delete this row?");
         if (!yes) return;
         //
-        //Get get the current row of this tabular layout
-        var row = get_current_row();
+        //Get get the current row of this records layout
+        var row = this.get_current_row();
         //
         //Skip this process if the row is not valid
         if (!row) {return;}
@@ -569,7 +567,7 @@ function Tabular(tabular_)
     };
     
     
-    //Load this tabular page, using the given hint 
+    //Load this records page, using the given hint 
     this.load = function (hint)
     {
         //
@@ -601,8 +599,8 @@ function Tabular(tabular_)
     //the hint
     this.populate_article = function (hint, page)
     {
-        //Set the hint property of the tabular layout object, as we need to
-        //transfer it to the server (when we json this tabular layout)
+        //Set the hint property of the records layout object, as we need to
+        //transfer it to the server (when we json this records layout)
         this.hint = hint;
         //
         //Pass the concat expression
@@ -641,9 +639,9 @@ function Tabular(tabular_)
             }
         };
         //
-        //Prepare a url for sending the list support page with current tabular 
+        //Prepare a url for sending the list support page with current records 
         //settings -- especially the hint
-        var url = page + "?tabular=" + JSON.stringify(this);
+        var url = page + "?records=" + JSON.stringify(this);
         //
         //Use the get method to send the url to the server
         xhttp.open("GET", url);
@@ -717,55 +715,11 @@ function Tabular(tabular_)
         window.close();
         
     };
-
-    
-    
-    //On loading the data show the current selection. This implies 2 things:
-    //1) Mark the requested row;
-    //2) Go to it, thus makimg it visible, i.e., hreference it
-    this.show_selection=function()
-    {
-        //Get the id of the row to show; return if its not valid
-        if (!this.id) {return;}
-        //
-        //Mark the requested row
-        //
-        //Get the tr with the given id
-        var tr  = document.getElementById(this.id);
-        console.log(this.id);
-        console.log(tr);
-        //
-        //If there is no row that mtaches the given id, then probably it does 
-        //not exist. Perhaps it was deleted. do not continue
-        if (tr===null) {return;}
-        //
-        //Formulate a new row and select it
-        new Row(tr).select();
-        //
-        //Go to the requested row, i.e, hreference to it
-        window.location.href="#" + this.id;
-    };
-
 }
 
-//Returns the current row of any page (based) on the last tr
-function get_current_row()
-{
-    //Retrieve the last tr
-    var tr = window.last_tr;
-    //
-    if (typeof tr==="undefined")
-    {
-        alert ("There is no current selection");
-        return false;
-    }
-    //
-    //Formulate a new row and return it
-    return new Row(tr);
-};
 
 //Post the given structure to the given php file and execute 
-//the opinish function when done
+//the on finish function when done
 function post(record, php, on_finish)
 {
     //
@@ -841,12 +795,13 @@ function Row(tr)
         window.last_tr=this.tr;
         window.localStorage.last_tr_id=this.tr.getAttribute("id");
     };
-    
 }
 
 //The database representative
 function Dbase(dbase_)
 {
+    Tabular.call(this, dbase_);
+    
     //Initialize the mutall database object from the stanadard javascript object
     this.username = dbase_.username;
     this.password  = dbase_.password;
@@ -870,7 +825,7 @@ function Dbase(dbase_)
     this.view_table = function()
     {
         //Set the selected table name
-        row = get_current_row();
+        var row = this.get_current_row();
         //
         //Retrieve the tname attribute from the row's tr
         this.tname = row.tr.getAttribute("tname");
@@ -882,5 +837,49 @@ function Dbase(dbase_)
    
 }
 
+function Tabular(id){
+    
+    //Id that we show onloading this tabular layout
+    this.id=id;
+    //
+    //On loading the data show the current selection. This implies 2 things:
+    //1) Mark the requested row;
+    //2) Go to it, thus makimg it visible, i.e., hreference it
+    this.show_selection=function()
+    {
+        //Get the id of the row to show; return if its not valid
+        if (!this.id) {return;}
+        //
+        //Mark the requested row
+        //
+        //Get the tr with the given id
+        var tr  = document.getElementById(this.id);
+        //
+        //If there is no row that mtaches the given id, then probably it does 
+        //not exist. Perhaps it was deleted. do not continue
+        if (tr===null) {return;}
+        //
+        //Formulate a new row and select it
+        new Row(tr).select();
+        //
+        //Go to the requested row, i.e, hreference to it
+        window.location.href="#" + this.id;
+    };
+    
+    //Returns the current row of any page (based) on the last tr
+    this.get_current_row = function ()
+    {
+        //Retrieve the last tr
+        var tr = window.last_tr;
+        //
+        if (typeof tr==="undefined")
+        {
+            alert ("There is no current selection");
+            return false;
+        }
+        //
+        //Formulate a new row and return it
+        return new Row(tr);
+    };
 
-
+}
