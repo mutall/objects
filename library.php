@@ -2159,7 +2159,7 @@ class Schema {
             //Get the current database name
             $dbname = $row['SCHEMA_NAME'];
             ?>
-            <tr onclick='schema.select(this)' dbname='<?php echo $dbname; ?>'>
+            <tr onclick='schema.select(this)' id='<?php echo $dbname; ?>'>
                 <td>
             <?php echo $dbname; ?>
                 </td>
@@ -2171,9 +2171,9 @@ class Schema {
     //Show the login value as either blank or the logged in database 
     //depending on ehter the dbase session variable is set or not
     public function show_login_value() {
-        if (isset($_SESSION['dbase'])) {
+        if (isset($_SESSION['schema'])) {
             //Get the database ame;
-            $dbname = $_SESSION['dbase']->dbname;
+            $dbname = $_SESSION['schema']->dbname;
             //
             //Return the login value
             return "value = 'Logout $dbname'";
@@ -2184,7 +2184,7 @@ class Schema {
 
     //If there is no logged in database from last session hide the login button
     public function hide_login() {
-        if (isset($_SESSION['dbase'])) {
+        if (isset($_SESSION['schema'])) {
             return "";
         } else {
             return "hidden='true'";

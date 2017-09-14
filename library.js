@@ -112,7 +112,7 @@ function Label(record)
         {
             //Get the field id value
             var value = this.get_field_id(xnames[i]);
-            console.log(value);
+            //console.log(value);
             //
             //verify that this value is not empry; otherwise give an alert and
             //retun a false
@@ -295,6 +295,9 @@ function FkField()
 
 function Schema(schema_)
 {
+    //Pass all the data from teh schema to this opbject
+    for(var p in schema_){this[p]=schema_[p];}
+    //
     //inherit from the tabular layout
     Tabular.call(this, schema_.id);
     //
@@ -306,26 +309,28 @@ function Schema(schema_)
         new Row(tr).select();
         //
         //Save the current row for future reference.
-        this.dbname = tr.getAttribute("dbname");
-
+        this.dbname = tr.getAttribute("id");
+        
     };
     
     //Assuming that the user has logged into a database list all the 
     //mutall tables of the database.
     this.view_database=function()
     {
+        
         //Open the dabase window with the current database. Pass the schema structure
         //-- just incase it has data that is important
         var dbwin = window.open("view_database.php?schema="+JSON.stringify(this), this.dbname);
-        
     };
     
     //Supply the login credentials, i.e., username, password and database
     //They will be saved in a session
     this.login = function()
     {
+        var dbname = this.dbname;
+        //
         //To proceed the database name parameter must be set
-        if (typeof this.dbname==="undefined")
+        if (typeof dbname==="undefined")
         {
             alert("Please select a database");
             return;
@@ -374,7 +379,7 @@ function Schema(schema_)
         var win = window.open("login_save.php?schema="+JSON.stringify(this));
         //
         //Close this window, thus signalling to the caller that we are done with
-                        //the login
+        //the login
         window.close();
         
     };
